@@ -61,6 +61,7 @@ export const authOptions = {
     async signIn({ user, account }) {
       await connectDb();
       const existingUser = await User.findOne({ email: user.email });
+
       if (!existingUser) {
         await User.create({
           name: user.name,
@@ -69,10 +70,13 @@ export const authOptions = {
           provider: account.provider,
         });
       }
+
       return true;
     },
     async session({ session, token }) {
-      session.user.id = token.sub;
+      if (session?.user) {
+        session.user.id = token.sub;
+      }
       return session;
     },
   },
@@ -80,67 +84,5 @@ export const authOptions = {
 };
 
 const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST };
- profile(profile) {
-        return {
-          id: profile.id.toString(),
-          name: profile.name || profile.login,
-          email: profile.email ?? `${profile.login}@github.com`, // fallback if email is null
-          image: profile.avatar_url,
-        };
-      },
-    }),
-  ],
-  secret: process.env.NEXTAUTH_SECRET,
-  debug: true, // Helpful while debugging (disable in prod)
-  callbacks: {
-    async signIn({ user, account }) {
-      try {
-        if (!user?.email) {
-          console.error("❌ No email in GitHub profile.");
-          return false;
-        }
 
-        await connectDb();
-        const existing = await User.findOne({ email: user.email });
-
-        if (!existing) {
-          await User.create({
-            email: user.email,
-            username: user.email.split("@")[0],
-            name: user.name || user.email.split("@")[0],
-          });
-        }
-
-        return true;
-      } catch (err) {
-        console.error("❌ Error in signIn callback:", err);
-        return false;
-      }
-    },
-
-    async session({ session }) {
-      try {
-        await connectDb();
-        const dbUser = await User.findOne({ email: session.user.email });
-
-        if (dbUser) {
-          session.user.name = dbUser.username; // update session name with DB username
-        }
-
-        return session;
-      } catch (err) {
-        console.error("❌ Error in session callback:", err);
-        return session; // return session anyway to avoid crashing
-      }
-    },
-  },
-};
-
-const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST };
-
-};
-
-const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
