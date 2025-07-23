@@ -55,7 +55,33 @@ export const authOptions = {
     GithubProvider({
       clientId: process.env.GITHUB_ID,
       clientSecret: process.env.GITHUB_SECRET,
-      profile(profile) {
+    }),
+  ],
+  callbacks: {
+    async signIn({ user, account }) {
+      await connectDb();
+      const existingUser = await User.findOne({ email: user.email });
+      if (!existingUser) {
+        await User.create({
+          name: user.name,
+          email: user.email,
+          image: user.image,
+          provider: account.provider,
+        });
+      }
+      return true;
+    },
+    async session({ session, token }) {
+      session.user.id = token.sub;
+      return session;
+    },
+  },
+  secret: process.env.NEXTAUTH_SECRET,
+};
+
+const handler = NextAuth(authOptions);
+export { handler as GET, handler as POST };
+ profile(profile) {
         return {
           id: profile.id.toString(),
           name: profile.name || profile.login,
