@@ -1,6 +1,8 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { useSession, signOut } from "next-auth/react";
+import { update } from "next-auth/react";
+import * as NextAuthReact from "next-auth/react";
 import { useRouter } from 'next/navigation';
 import { fetchuserByEmail, updateProfile } from '@/actions/useractions';
 import { ToastContainer, toast } from 'react-toastify';
@@ -44,6 +46,11 @@ const Dashboard = () => {
         try {
             console.log("Submitting form:", form);
             await updateProfile(form, session.user.name);
+
+             // If username changed, refresh session
+        // if (form.username !== session.user.name) {
+        //     await update(); // This will fetch the latest username from the DB
+        // }
             toast('Profile Updated', {
                 position: "top-right",
                 autoClose: 2000,
@@ -58,7 +65,7 @@ const Dashboard = () => {
             if (form.username !== session.user.name) {
                 setTimeout(() => {
                     router.push(`/${form.username}`);
-                }, 2000);
+                }, 1000);
             }
         } catch (error) {
             toast.error('Update failed! Try again.', {

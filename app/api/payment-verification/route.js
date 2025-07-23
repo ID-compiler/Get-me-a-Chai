@@ -11,11 +11,11 @@ export const POST = async (req) => {
     const payment = await Payment.findOne({ oid: form.razorpay_order_id });
     if (!payment) return NextResponse.redirect(`${process.env.NEXT_PUBLIC_URL}/failure`);
 
-    // If you want to check user, you can, but not required for secret
+    const user = await User.findOne({ username: payment.to_user });
     const isValid = validatePaymentVerification(
         { order_id: form.razorpay_order_id, payment_id: form.razorpay_payment_id },
         form.razorpay_signature,
-        process.env.KEY_SECRET // Use your global secret here
+        process.env.KEY_SECRET // Using global secret here
     );
 
     if (isValid) {
@@ -25,13 +25,9 @@ export const POST = async (req) => {
             { new: true }
         );
         // Redirect to a custom success page
-        const baseUrl = process.env.BASE_URL || "http://localhost:3000";
-        const redirectUrl = `${baseUrl}/success?user=${payment.to_user}`;
-        console.log("Redirecting to:", redirectUrl);
-        return NextResponse.redirect(redirectUrl, 303);
+        return NextResponse.redirect(`${process.env.NEXT_PUBLIC_URL}/success?user=${payment.to_user}`);
     } else {
         // Redirect to a custom failure page
-        const baseUrl = process.env.BASE_URL || "http://localhost:3000";
-        return NextResponse.redirect(`${baseUrl}/failure`);
+        return NextResponse.redirect(`${process.env.NEXT_PUBLIC_URL}/failure`);
     }
-};
+}; 
