@@ -25,13 +25,13 @@ export const POST = async (req) => {
             { new: true }
         );
         // Redirect to a custom success page
-        const baseUrl = process.env.BASE_URL || "https://get-me-a-chaii.netlify.app";
+        const baseUrl = process.env.BASE_URL || "https://get-me-a-chai-woad-three.vercel.app";
         const redirectUrl = `${baseUrl}/success?user=${payment.to_user}`;
         console.log("Redirecting to:", redirectUrl);
         return NextResponse.redirect(redirectUrl, 303);
     } else {
         // Redirect to a custom failure page
-        const baseUrl = process.env.BASE_URL || "https://get-me-a-chaii.netlify.app";
+        const baseUrl = process.env.BASE_URL || "https://get-me-a-chai-woad-three.vercel.app";
         return NextResponse.redirect(`${baseUrl}/failure`);
     }
 };
