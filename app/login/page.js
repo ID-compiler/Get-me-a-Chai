@@ -18,6 +18,7 @@ const Login = () => {
   return (
     <div className='text-white py-14 container mx-auto'>
       <h1 className='text-center font-bold text-3xl'>Login to Get Started</h1>
+      <h1 className='text-center text-gray-400 font-normal text-lg mt-1'>(continue with github)</h1>
 
       <div className="flex flex-col gap-2 min-h-screen items-center  p-10">
 
@@ -156,4 +157,3 @@ const Login = () => {
 }
 
 export default Login
- 
